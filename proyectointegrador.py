@@ -4,7 +4,8 @@ SEDES = ["Tienda", "Bodega", "Online"]
 
 productos = []
 
-
+# Auxiliares
+#============================================================================================
 def limpiar_pantalla():
     print("\n" + "=" * 60)
 
@@ -38,18 +39,21 @@ def leer_texto_no_vacio(mensaje):
 
 
 def buscar_indice_por_codigo(codigo):
-    for i in range(len(productos)):
-        producto = productos[i]
+    for i, producto in enumerate(productos):
         if producto["codigo"] == codigo:
             return i
     return -1
 
+#============================================================================================
 
 def crear_producto():
+
     limpiar_pantalla()
+
     print("CREAR PRODUCTO")
 
     codigo = leer_entero("Codigo del producto: ")
+
     if codigo < 1:
         print("El codigo debe ser mayor o igual a 1")
         return
@@ -59,14 +63,19 @@ def crear_producto():
 
     nombre = leer_texto_no_vacio("Nombre del producto: ")
     print("Categorias disponibles:")
-    for i in range(len(CATEGORIAS)):
-        print(f"{i + 1}. {CATEGORIAS[i]}")
+
+    for i, cat in enumerate(CATEGORIAS):
+        print(f"{i + 1}. {cat}")
+
     opcion_categoria = leer_entero("Selecciona categoria: ")
+
     while opcion_categoria < 1 or opcion_categoria > len(CATEGORIAS):
         print("Opcion invalida")
         opcion_categoria = leer_entero("Selecciona categoria: ")
+
     categoria = CATEGORIAS[opcion_categoria - 1]
     precio = leer_float("Precio unitario: ")
+
     if precio < 0:
         print("El precio no pued ser negativo")
         return
@@ -89,7 +98,7 @@ def crear_producto():
             return
         productos[-1]["stock"][sede] = cantidad
 
-    print("Producto creado con exito")
+    print("listo, producto guardado")
 
 
 def listar_productos():
@@ -100,15 +109,12 @@ def listar_productos():
         print("Todavia no hay productos registrados")
         return
 
-    encabezado = "Codigo | Nombre | Categoria | Precio"
-    for i in range(len(SEDES)):
-        encabezado = encabezado + " | " + SEDES[i]
-    encabezado = encabezado + " | Stock total"
+    # cambia a join() en vez de usar el for  para mejor rendimiento
+    encabezado = "Codigo | Nombre | Categoria | Precio | " + " | ".join(SEDES) + " | Stock total"
     print(encabezado)
     print("-" * len(encabezado))
 
-    for i in range(len(productos)):
-        producto = productos[i]
+    for producto in productos:
         fila = (
             f"{producto['codigo']} | {producto['nombre']} | "
             f"{producto['categoria']} | ${producto['precio']:.2f}"
@@ -116,9 +122,9 @@ def listar_productos():
         total = 0
         for sede in SEDES:
             cantidad = producto["stock"][sede]
-            total = total + cantidad
-            fila = fila + " | " + str(cantidad)
-        fila = fila + " | " + str(total)
+            total += cantidad
+            fila += " | " + str(cantidad)
+        fila += " | " + str(total)
         print(fila)
 
 
@@ -142,13 +148,17 @@ def actualizar_producto():
 
     nuevo_nombre = leer_texto_no_vacio("Nuevo nombre del producto: ")
     nuevo_precio = leer_float("Nuevo precio unitario: ")
+
     if nuevo_precio < 0:
-        print("El precio no pued ser negativo")
+        print("El precio no puede ser negativo")
         return
     print("Categorias disponibles:")
-    for i in range(len(CATEGORIAS)):
-        print(f"{i + 1}. {CATEGORIAS[i]}")
+    
+    for i, cat in enumerate(CATEGORIAS):
+        print(f"{i + 1}. {cat}")
+        
     opcion_categoria = leer_entero("Nueva categoria: ")
+
     while opcion_categoria < 1 or opcion_categoria > len(CATEGORIAS):
         print("Opcion invalida")
         opcion_categoria = leer_entero("Nueva categoria: ")
@@ -157,7 +167,8 @@ def actualizar_producto():
     productos[indice]["precio"] = nuevo_precio
     productos[indice]["categoria"] = CATEGORIAS[opcion_categoria - 1]
 
-    print("Datos actualizados correctamente")
+    
+    print("ok, datos actualizados")
 
 
 def eliminar_producto():
@@ -202,12 +213,16 @@ def ajustar_stock():
 
     print(f"Producto seleccionado: {productos[indice]['nombre']}")
     print("Sedes disponibles:")
-    for i in range(len(SEDES)):
-        print(f"{i + 1}. {SEDES[i]}")
+    
+    for i, sede in enumerate(SEDES):
+        print(f"{i + 1}. {sede}")
+
     opcion_sede = leer_entero("Selecciona sede: ")
+    
     while opcion_sede < 1 or opcion_sede > len(SEDES):
         print("Opcion invalida")
         opcion_sede = leer_entero("Selecciona sede: ")
+
     pos_sede = opcion_sede - 1
 
     print("Tipo de ajuste:")
@@ -223,17 +238,17 @@ def ajustar_stock():
         return
 
     stock_actual = productos[indice]["stock"][SEDES[pos_sede]]
+    
+
     if tipo == 1:
         productos[indice]["stock"][SEDES[pos_sede]] = stock_actual + unidades
-        print("Stock actualizado correctamente")
-        return
-
-    if unidades > stock_actual:
-        print("No hay suficiente stock para esa salida")
-        return
-
-    productos[indice]["stock"][SEDES[pos_sede]] = stock_actual - unidades
-    print("Stock actualizado correctamente")
+        print("stock actualizado!")
+    else:
+        if unidades > stock_actual:
+            print("No hay suficiente stock para esa salida")
+            return
+        productos[indice]["stock"][SEDES[pos_sede]] = stock_actual - unidades
+        print("stock actualizado!")
 
 
 def mostrar_menu():
