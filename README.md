@@ -57,4 +57,4 @@ Sigue las instrucciones en pantalla para interactuar con el sistema.
 - Función para ajustar stock.
 
 ## Autor
-didier y santiago
+Didier Hernandez Oyola y Santiago Orjuela Ortiz
